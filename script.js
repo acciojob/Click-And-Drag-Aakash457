@@ -5,12 +5,12 @@ let startX = 0;
 let scrollLeft = 0;
 
 slider.addEventListener('mousedown', (e) => {
-  if (e.which !== 1) return; // only left click
+  if (e.which !== 1) return;
 
   isDown = true;
   slider.classList.add('active');
 
-  startX = e.clientX;   // ✅ use clientX
+  startX = e.clientX || e.pageX;
   scrollLeft = slider.scrollLeft;
 });
 
@@ -27,6 +27,8 @@ slider.addEventListener('mouseleave', () => {
 slider.addEventListener('mousemove', (e) => {
   if (!isDown) return;
 
-  const walk = e.clientX - startX; // ✅ use clientX
+  const x = e.clientX || e.pageX;
+  const walk = x - startX;
+
   slider.scrollLeft = scrollLeft - walk;
 });
