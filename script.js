@@ -2,33 +2,28 @@ const slider = document.querySelector('.items');
 
 let isDown = false;
 let startX = 0;
-let scrollLeft = 0;
+let startScroll = 0;
 
-slider.addEventListener('mousedown', (e) => {
+slider.addEventListener('mousedown', function (e) {
   if (e.which !== 1) return;
 
   isDown = true;
   slider.classList.add('active');
 
-  startX = e.clientX || e.pageX;
-  scrollLeft = slider.scrollLeft;
+  startX = e.pageX;
+  startScroll = slider.scrollLeft;
 });
 
-slider.addEventListener('mouseup', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
-
-slider.addEventListener('mouseleave', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
-
-slider.addEventListener('mousemove', (e) => {
+slider.addEventListener('mousemove', function (e) {
   if (!isDown) return;
 
-  const x = e.clientX || e.pageX;
-  const walk = x - startX;
+  // Use pageX directly from event
+  const diff = e.pageX - startX;
 
-  slider.scrollLeft = scrollLeft - walk;
+  slider.scrollLeft = startScroll - diff;
+});
+
+slider.addEventListener('mouseup', function () {
+  isDown = false;
+  slider.classList.remove('active');
 });
