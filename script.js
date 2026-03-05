@@ -1,63 +1,36 @@
-const container = document.querySelector('.items');
-const items = document.querySelectorAll('.item');
+const slider = document.querySelector('.items');
 
-let activeItem = null;
-let offsetX = 0;
-let offsetY = 0;
-let isDragging = false;
+let isDown = false;
+let startX;
+let scrollLeft;
 
-items.forEach(item => {
-  // Make items positionable
-  item.style.position = 'absolute';
+slider.addEventListener('mousedown', (e) => {
+  if (e.which !== 1) return; // left mouse only
 
-  // Arrange them in grid initially
-  const index = Array.from(items).indexOf(item);
-  const cols = 5; // 5 items per row
-  const gap = 20;
-  const itemWidth = 200;
-  const itemHeight = container.clientHeight - 40;
+  isDown = true;
+  slider.classList.add('active');
 
-  const row = Math.floor(index / cols);
-  const col = index % cols;
-
-  item.style.left = `${col * (itemWidth + gap)}px`;
-  item.style.top = `${row * (itemHeight / 4)}px`;
-
-  item.addEventListener('mousedown', (e) => {
-    activeItem = item;
-    isDragging = true;
-
-    const rect = item.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-
-    item.style.cursor = 'grabbing';
-  });
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
 });
 
-document.addEventListener('mousemove', (e) => {
-  if (!isDragging || !activeItem) return;
-
-  const containerRect = container.getBoundingClientRect();
-
-  let newLeft = e.clientX - containerRect.left - offsetX;
-  let newTop = e.clientY - containerRect.top - offsetY;
-
-  // Boundary constraints
-  const maxLeft = container.clientWidth - activeItem.offsetWidth;
-  const maxTop = container.clientHeight - activeItem.offsetHeight;
-
-  newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-  newTop = Math.max(0, Math.min(newTop, maxTop));
-
-  activeItem.style.left = `${newLeft}px`;
-  activeItem.style.top = `${newTop}px`;
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+  slider.classList.remove('active');
 });
 
-document.addEventListener('mouseup', () => {
-  if (activeItem) {
-    activeItem.style.cursor = 'grab';
-  }
-  isDragging = false;
-  activeItem = null;
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
+
+slider.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+
+  e.preventDefault(); // IMPORTANT for Cypress
+
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 2; // scroll speed multiplier
+
+  slider.scrollLeft = scrollLeft - walk;
 });
