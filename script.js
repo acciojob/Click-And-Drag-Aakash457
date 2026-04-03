@@ -2,38 +2,29 @@ const slider = document.querySelector('.items');
 
 let isDown = false;
 let startX = 0;
-let scrollLeft = 0;
 
 slider.addEventListener('mousedown', (e) => {
   isDown = true;
-  slider.classList.add('active');
-
   startX = e.pageX;
-  scrollLeft = slider.scrollLeft;
 });
 
 slider.addEventListener('mousemove', (e) => {
   if (!isDown) return;
 
-  e.preventDefault();
+  // 👇 SIMPLE + RELIABLE
+  const walk = startX - e.pageX;
 
-  const walk = e.pageX - startX;
+  // 👇 ALWAYS updates scroll
+  slider.scrollLeft += walk;
 
-  // ✅ FORCE scroll change (this is key)
-  slider.scrollLeft = scrollLeft - walk;
-
-  // ✅ fallback safety (ensures > 0 for Cypress)
-  if (slider.scrollLeft === 0) {
-    slider.scrollLeft = 1;
-  }
+  // reset start point so movement continues smoothly
+  startX = e.pageX;
 });
 
 slider.addEventListener('mouseup', () => {
   isDown = false;
-  slider.classList.remove('active');
 });
 
 slider.addEventListener('mouseleave', () => {
   isDown = false;
-  slider.classList.remove('active');
 });
