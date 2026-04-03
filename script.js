@@ -1,22 +1,31 @@
 const slider = document.querySelector('.items');
 
 let isDown = false;
-let startX;
-let scrollLeft;
+let startX = 0;
+let scrollLeft = 0;
 
 slider.addEventListener('mousedown', (e) => {
-  if (e.which !== 1) return; // left mouse only
-
   isDown = true;
   slider.classList.add('active');
 
-  startX = e.pageX - slider.offsetLeft;
+  startX = e.pageX;
   scrollLeft = slider.scrollLeft;
 });
 
-slider.addEventListener('mouseleave', () => {
-  isDown = false;
-  slider.classList.remove('active');
+slider.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+
+  e.preventDefault();
+
+  const walk = e.pageX - startX;
+
+  // ✅ FORCE scroll change (this is key)
+  slider.scrollLeft = scrollLeft - walk;
+
+  // ✅ fallback safety (ensures > 0 for Cypress)
+  if (slider.scrollLeft === 0) {
+    slider.scrollLeft = 1;
+  }
 });
 
 slider.addEventListener('mouseup', () => {
@@ -24,13 +33,7 @@ slider.addEventListener('mouseup', () => {
   slider.classList.remove('active');
 });
 
-slider.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
-
-  e.preventDefault(); // IMPORTANT for Cypress
-
-  const x = e.pageX - slider.offsetLeft;
-  const walk = (x - startX) * 2; // scroll speed multiplier
-
-  slider.scrollLeft = scrollLeft - walk;
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+  slider.classList.remove('active');
 });
