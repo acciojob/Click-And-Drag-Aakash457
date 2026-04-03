@@ -5,7 +5,8 @@ let startX;
 let scrollLeft;
 
 slider.addEventListener('mousedown', (e) => {
-  if (e.which !== 1) return; // left click only
+  // ✅ Fix here
+  if (e.buttons !== 1) return;
 
   isDown = true;
   slider.classList.add('active');
@@ -30,7 +31,7 @@ slider.addEventListener('mousemove', (e) => {
   e.preventDefault();
 
   const x = e.pageX - slider.offsetLeft;
-  const walk = (x - startX) * 2; // speed multiplier
+  const walk = (x - startX) * 2;
 
   slider.scrollLeft = scrollLeft - walk;
 });
