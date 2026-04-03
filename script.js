@@ -5,13 +5,12 @@ let startX;
 let scrollLeft;
 
 slider.addEventListener('mousedown', (e) => {
-  // ✅ Fix here
-  if (e.buttons !== 1) return;
-
   isDown = true;
   slider.classList.add('active');
 
-  startX = e.pageX - slider.offsetLeft;
+  const rect = slider.getBoundingClientRect();
+
+  startX = e.clientX - rect.left;   // ✅ FIX
   scrollLeft = slider.scrollLeft;
 });
 
@@ -30,7 +29,9 @@ slider.addEventListener('mousemove', (e) => {
 
   e.preventDefault();
 
-  const x = e.pageX - slider.offsetLeft;
+  const rect = slider.getBoundingClientRect();
+
+  const x = e.clientX - rect.left;  // ✅ FIX
   const walk = (x - startX) * 2;
 
   slider.scrollLeft = scrollLeft - walk;
