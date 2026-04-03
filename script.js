@@ -5,24 +5,32 @@ let startX;
 let scrollLeft;
 
 slider.addEventListener('mousedown', (e) => {
+  if (e.which !== 1) return; // left mouse only
+
   isDown = true;
   slider.classList.add('active');
 
-  startX = e.pageX;
+  startX = e.pageX - slider.offsetLeft;
   scrollLeft = slider.scrollLeft;
 });
 
-// 👇 IMPORTANT: listen on document (not just slider)
-document.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
-
-  e.preventDefault();
-
-  const walk = (e.pageX - startX) * 2;
-  slider.scrollLeft = scrollLeft - walk;
-});
-
-document.addEventListener('mouseup', () => {
+slider.addEventListener('mouseleave', () => {
   isDown = false;
   slider.classList.remove('active');
+});
+
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
+
+slider.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+
+  e.preventDefault(); // IMPORTANT for Cypress
+
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 2; // scroll speed multiplier
+
+  slider.scrollLeft = scrollLeft - walk;
 });
